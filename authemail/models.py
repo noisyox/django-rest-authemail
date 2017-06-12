@@ -126,6 +126,11 @@ def send_multi_format_email(template_prefix, template_ctxt, target_email):
         txt_file = 'authemail/%s.txt' % template_prefix
         html_file = 'authemail/%s.html' % template_prefix
 
+        try:
+            template_ctxt['domain'] = settings.EMAIL_VERIFY_DOMAIN
+        except Application.DoesNotExist:
+            raise NotFound("The domain for email verification link is not setup or misconfigured")
+
         subject = render_to_string(subject_file).strip()
         from_email = settings.DEFAULT_EMAIL_FROM
         to = target_email

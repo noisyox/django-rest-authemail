@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from authemail.models import SignupCode, PasswordResetCode, send_multi_format_email
+from authemail.utils import get_token, delete_token
 from authemail.serializers import SignupSerializer, LoginSerializer
 from authemail.serializers import PasswordResetSerializer
 from authemail.serializers import PasswordResetVerifiedSerializer
@@ -98,6 +99,7 @@ class Login(APIView):
     serializer_class = LoginSerializer
 
     def post(self, request, format=None):
+        from authemail.helpers import get_token
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
@@ -107,8 +109,8 @@ class Login(APIView):
 
             if user and user.is_verified:
                 if user.is_active:
-                    token, created = Token.objects.get_or_create(user=user)
-                    return Response({'token': token.key},
+                    token, refresh_token = get_token(user)
+                    return Response({"token": token, "refresh_token":refresh_token},
                         status=status.HTTP_200_OK)
                 else:
                     content = {'detail': _('User account not active.')}
@@ -131,9 +133,7 @@ class Logout(APIView):
         """
         Remove all auth tokens owned by request.user.
         """
-        tokens = Token.objects.filter(user=request.user)
-        for token in tokens:
-            token.delete()
+        tokens = delete_token(user=request.user)
         content = {'success': _('User logged out.')}
         return Response(content, status=status.HTTP_200_OK)
 
