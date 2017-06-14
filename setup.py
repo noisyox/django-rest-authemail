@@ -23,6 +23,7 @@ setup(
     install_requires=[
         'Django==1.9',
         'djangorestframework==3.3.3',
+        'django-rest-framework-social-oauth2==1.0.5',
         'requests>=2.3.0',
     ],
     classifiers=[

@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import send_mail
+from rest_framework.exceptions import NotFound
 
 
 def _generate_code():
@@ -93,6 +94,21 @@ class EmailAbstractUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    @property
+    def is_admin(self):
+        "Is the user a member of admin?"
+        # Simplest possible answer: All admins are staff
+        return self.is_admin
 
 class SignupCodeManager(models.Manager):
     def create_signup_code(self, user, ipaddr):
@@ -129,7 +145,7 @@ def send_multi_format_email(template_prefix, template_ctxt, target_email):
         try:
             template_ctxt['domain'] = settings.EMAIL_VERIFY_DOMAIN
         except Application.DoesNotExist:
-            raise NotFound("The domain for email verification link is not setup or misconfigured")
+            raise NotFound("The EMAIL_VERIFY_DOMAIN for email verification link is not setup or misconfigured")
 
         subject = render_to_string(subject_file).strip()
         from_email = settings.DEFAULT_EMAIL_FROM

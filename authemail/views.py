@@ -8,9 +8,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import NotFound
 
 from authemail.models import SignupCode, PasswordResetCode, send_multi_format_email
-from authemail.utils import get_token, delete_token
+from authemail.helpers import get_token, delete_token
 from authemail.serializers import SignupSerializer, LoginSerializer
 from authemail.serializers import PasswordResetSerializer
 from authemail.serializers import PasswordResetVerifiedSerializer
@@ -73,7 +74,6 @@ class Signup(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class SignupVerify(APIView):
     permission_classes = (AllowAny,)
 
@@ -99,7 +99,6 @@ class Login(APIView):
     serializer_class = LoginSerializer
 
     def post(self, request, format=None):
-        from authemail.helpers import get_token
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
