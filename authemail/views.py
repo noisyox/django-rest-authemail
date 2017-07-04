@@ -109,7 +109,7 @@ class Login(APIView):
             if user and user.is_verified:
                 if user.is_active:
                     token, refresh_token = get_token(user)
-                    return Response({"token": token, "refresh_token":refresh_token},
+                    return Response({"access_token": token, "refresh_token":refresh_token},
                         status=status.HTTP_200_OK)
                 else:
                     content = {'detail': _('User account not active.')}

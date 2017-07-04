@@ -104,11 +104,11 @@ class EmailAbstractUser(AbstractBaseUser, PermissionsMixin):
         # Simplest possible answer: Yes, always
         return True
 
-    @property
-    def is_admin(self):
-        "Is the user a member of admin?"
-        # Simplest possible answer: All admins are staff
-        return self.is_admin
+    # @property
+    # def is_admin(self):
+    #     "Is the user a member of admin?"
+    #     # Simplest possible answer: All admins are staff
+    #     return self.is_admin
 
 class SignupCodeManager(models.Manager):
     def create_signup_code(self, user, ipaddr):
